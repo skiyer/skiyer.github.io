@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Posts on Skiyer&#39;s blog</title>
+    <link>http://localhost:1313/post/</link>
+    <description>Recent content in Posts on Skiyer&#39;s blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Fri, 03 Apr 2015 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="http://localhost:1313/post/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>OTR协议学习</title>
+      <link>http://localhost:1313/post/otr-protocol/</link>
+      <pubDate>Fri, 03 Apr 2015 00:00:00 +0000</pubDate>
+      
+      <guid>http://localhost:1313/post/otr-protocol/</guid>
+      <description>&lt;p&gt;最近信息安全实验课有一个编程项目，我们组的选题是加密即时通讯软件。上网搜了一番资料后发现一个OTR加密协议（&lt;a href=&#34;https://otr.cypherpunks.ca&#34;&gt;Off-the-Record&lt;/a&gt;）。又搜到几篇关于OTR的论文，从中学到了许多加密协议方面的知识。&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

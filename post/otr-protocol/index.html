@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>OTR协议学习 - Skiyer&#39;s blog</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="skiyer" /><meta name="description" content="最近信息安全实验课有一个编程项目，我们组的选题是加密即时通讯软件。上网搜了一番资料后发现一个OTR加密协议（Off-the-Record）。又搜到几篇关于OTR的论文，从中学到了许多加密协议方面的知识。
+" /><meta name="keywords" content="skiyer, hacking, security" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.54.0 with even 4.0.0" />
+
+
+<link rel="canonical" href="http://localhost:1313/post/otr-protocol/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<link href="/dist/even.c2a46f00.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="OTR协议学习" />
+<meta property="og:description" content="最近信息安全实验课有一个编程项目，我们组的选题是加密即时通讯软件。上网搜了一番资料后发现一个OTR加密协议（Off-the-Record）。又搜到几篇关于OTR的论文，从中学到了许多加密协议方面的知识。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/post/otr-protocol/" />
+<meta property="article:published_time" content="2015-04-03T00:00:00&#43;00:00"/>
+<meta property="article:modified_time" content="2015-04-03T00:00:00&#43;00:00"/>
+
+<meta itemprop="name" content="OTR协议学习">
+<meta itemprop="description" content="最近信息安全实验课有一个编程项目，我们组的选题是加密即时通讯软件。上网搜了一番资料后发现一个OTR加密协议（Off-the-Record）。又搜到几篇关于OTR的论文，从中学到了许多加密协议方面的知识。">
+
+
+<meta itemprop="datePublished" content="2015-04-03T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2015-04-03T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="897">
+
+
+
+<meta itemprop="keywords" content="cryptography," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="OTR协议学习"/>
+<meta name="twitter:description" content="最近信息安全实验课有一个编程项目，我们组的选题是加密即时通讯软件。上网搜了一番资料后发现一个OTR加密协议（Off-the-Record）。又搜到几篇关于OTR的论文，从中学到了许多加密协议方面的知识。"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Skiyer&#39;s blog</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Skiyer&#39;s blog</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">OTR协议学习</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2015-04-03 </span>
+        
+        <span id="busuanzi_container_page_pv" class="more-meta"> <span id="busuanzi_value_page_pv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> 次阅读 </span>
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content always-active">
+    
+  </div>
+</div>
+    <div class="post-content">
+      <p>最近信息安全实验课有一个编程项目，我们组的选题是加密即时通讯软件。上网搜了一番资料后发现一个OTR加密协议（<a href="https://otr.cypherpunks.ca">Off-the-Record</a>）。又搜到几篇关于OTR的论文，从中学到了许多加密协议方面的知识。</p>
+
+<h2 id="0x01-原始协议">0x01 原始协议</h2>
+
+<p>第一篇论文<strong>Off-the-record communication, or, why not to use PGP</strong>提出了OTR协议的初始版本：</p>
+
+<h3 id="设计目标">设计目标</h3>
+
+<p>只有对话双方知道对话内容；对话结束后，任何人包括对话双方都不能得到对话内容的副本；虽然对话双方能相互确认身份，但任何人不能向第三方证明身份；上述几个目标都是为了模拟现实生活中的“私人谈话”。</p>
+
+<h3 id="使用的加密特性">使用的加密特性</h3>
+
+<ul>
+<li>Perfect forward secrecy (PFS)</li>
+<li>Digital signatures</li>
+<li>Message authentication codes(MAC)</li>
+<li>Malleable encryption</li>
+</ul>
+
+<p>协议使用DH密钥交换提供前向保密性，使用RSA签名进行身份验证。由于签名提供了不可否认性，使得任何人都能验证消息签名，所以只有DH密钥交换的消息中使用签名认证，对话消息不签名，保证<strong>可否认性</strong>。为保证消息完整性，验证消息来源，使用MAC。使用流密码加密，使得任何人在不知道密钥的情况下也可以伪造会话消息。</p>
+
+<h3 id="协议过程">协议过程</h3>
+
+<h4 id="encryption">Encryption</h4>
+
+<p>为保证会话密钥短时性，每次会话都使用DH交换新密钥，DH交换与会话消息发送同时进行。</p>
+
+<p><span  class="math">\[ A \rightarrow B:g^{x_1} \]</span></p>
+
+<p><span  class="math">\[ B \rightarrow A:g^{y_1} \]</span></p>
+
+<p><span  class="math">\[ A \rightarrow B: g^{x_2}, E_{k_{11}}(M_1) \]</span></p>
+
+<p><span  class="math">\[ B \rightarrow A: g^{y_2}, E_{k_{21}}(M_2) \]</span></p>
+
+<p><span  class="math">\[ A \rightarrow B: g^{x_3}, E_{k_{22}}(M_3) \]</span></p>
+
+<h4 id="forgetting-keys">Forgetting Keys</h4>
+
+<p>当会话密钥过期后，密钥被丢弃。而当Alice不停向Bob发送消息时，会产生许多会话密钥，由于延迟，Bob使用的会话密钥是不可预知的，因此Alice需维护一个密钥表。</p>
+
+<h4 id="authentication">Authentication</h4>
+
+<p>MAC密钥从会话密钥经过Hash得到。初始DH密钥交换使用签名认证</p>
+
+<p><span  class="math">\[ A\rightarrow B:Sign_{k_A}(g^{x_1}),K_A \]</span></p>
+
+<p><span  class="math">\[ B\rightarrow A:Sign_{k_B}(g^{y_1}),K_B \]</span></p>
+
+<p>正常的会话消息如下</p>
+
+<p><span  class="math">\[ g^{x_{i+1}},E_{k_{ij}}(M_r),MAC_{H(k_{ij})}(\{g^{x_{i+1}},E_{k_{ij}}(M_k)\}) \]</span></p>
+
+<h4 id="revealing-mac-keys">Revealing MAC keys</h4>
+
+<p>当Alice收到来自Bob的消息后，Alice把消息的MAC密钥以明文发送出去</p>
+
+<h2 id="0x02-原始协议的问题">0x02 原始协议的问题</h2>
+
+<p>第二篇论文<strong>Secure Off-the-Record Messaging</strong>指出了上篇论文中OTR协议存在的问题</p>
+
+<h3 id="security-analysis">SECURITY ANALYSIS</h3>
+
+<h4 id="an-authentication-failure">An authentication failure</h4>
+
+<p>原始OTR协议中的DH密钥交换会受到&quot;identity misbinding&quot;攻击。</p>
+
+<p><span  class="math">\[ A \rightarrow E:g^x,Sign_{s_A}(g^x),v_A \]</span></p>
+
+<p><span  class="math">\[ E\rightarrow B:g^x,Sign_{s_E}(g^x),v_E \]</span></p>
+
+<p><span  class="math">\[ B\rightarrow E:g^x,Sign_{s_B}(g^x),v_B \]</span></p>
+
+<p><span  class="math">\[ E\rightarrow A:g^x,Sign_{s_E}(g^x),v_E \]</span></p>
+
+<h4 id="a-freshnessimpersonation-vulnerability">A freshness-impersonation vulnerability</h4>
+
+<p>由于DH密钥交换消息内没有指定接收方，因此会遭受重放攻击</p>
+
+<h4 id="deniability">Deniability</h4>
+
+<p>如果消息内指定接收方，由于DH密钥交换消息使用签名，因此不具有可否认性。</p>
+
+<h3 id="building-a-sound-ake-for-otr">BUILDING A SOUND AKE FOR OTR</h3>
+
+<p>一种可行的密钥交换协议如下：</p>
+
+<p><span  class="math">\[ A\rightarrow B:g^x \]</span></p>
+
+<p><span  class="math">\[ B\rightarrow A:g^y \]</span></p>
+
+<p><span  class="math">\[ A\rightarrow B:A,Sign_{sk_A}(g^y,g^x),MAC_{K_m}(0,A),vk_A \]</span></p>
+
+<p><span  class="math">\[ B\rightarrow A:B,Sign_{sk_B}(g^x,g^y),MAC_{K_m}(1,B),vk_B \]</span></p>
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">skiyer</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2015-04-03
+        
+    </span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content"><a rel="license noopener" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC BY-NC-ND 4.0</a></span>
+  </p>
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/cryptography/">cryptography</a>
+          </div>
+      <nav class="post-nav">
+        
+        
+      </nav>
+    </footer>
+  </article>
+        </div>
+        <div id="disqus_thread"></div>
+    <script type="text/javascript">
+    (function() {
+      
+      
+      if (window.location.hostname === 'localhost') return;
+
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      var disqus_shortname = 'skiyer';
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="https://github.com/skiyer/" class="iconfont icon-github" title="github"></a>
+  <a href="http://localhost:1313/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  <div class="busuanzi-footer">
+    <span id="busuanzi_container_site_pv"> 本站总访问量 <span id="busuanzi_value_site_pv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> 次 </span>
+      <span class="division">|</span>
+    <span id="busuanzi_container_site_uv"> 本站总访客数 <span id="busuanzi_value_site_uv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> 人 </span>
+  </div>
+
+  <span class="copyright-year">
+    &copy; 
+    2015 - 
+    2019
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">skiyer</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
+  <script type="text/javascript">
+    window.MathJax = {
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"  integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/pangu@4.0.7/dist/browser/pangu.min.js"></script>
+<script>
+  pangu.spacingElementById('main');
+  pangu.spacingElementByClassName('comment');
+  pangu.spacingElementByTagName('p');
+  document.addEventListener('DOMContentLoaded', () => {
+    
+    pangu.autoSpacingPage();
+  });
+</script>
+
+
+
+
+</body>
+</html>
