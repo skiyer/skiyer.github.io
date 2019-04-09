@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>latex on Skiyer&#39;s blog</title>
+    <link>https://skiyer.github.io/tags/latex/</link>
+    <description>Recent content in latex on Skiyer&#39;s blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Tue, 17 Apr 2018 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://skiyer.github.io/tags/latex/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>在Manjaro下安装TeX Live</title>
+      <link>https://skiyer.github.io/post/manjaro-texlive/</link>
+      <pubDate>Tue, 17 Apr 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://skiyer.github.io/post/manjaro-texlive/</guid>
+      <description>&lt;p&gt;之前按照Arch Wiki的步骤安装了Tex Live，结果发现安装之后不能使用&lt;code&gt;tlmgr&lt;/code&gt;安装LaTeX包。根据论坛上的&lt;a href=&#34;https://forum.manjaro.org/t/texlive-missing-tlmgr/6065&#34;&gt;讨论&lt;/a&gt;，要想使用&lt;code&gt;tlmgr&lt;/code&gt;来管理包，只能用官方的安装方法。为了更好的兼容性，我决定卸载Arch源里的包，然后下载官方安装镜像来安装。&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

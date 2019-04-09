@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>programing on Skiyer&#39;s blog</title>
+    <link>https://skiyer.github.io/tags/programing/</link>
+    <description>Recent content in programing on Skiyer&#39;s blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Thu, 10 Apr 2014 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://skiyer.github.io/tags/programing/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>反向连接cmdshell</title>
+      <link>https://skiyer.github.io/post/reverse-cmd-shell/</link>
+      <pubDate>Thu, 10 Apr 2014 00:00:00 +0000</pubDate>
+      
+      <guid>https://skiyer.github.io/post/reverse-cmd-shell/</guid>
+      <description>&lt;blockquote&gt;
+&lt;p&gt;原载于bbs.xdsec.org&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;寒假时写过一个简单的cmdshell程序，直接拿来改了一下&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

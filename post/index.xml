@@ -2,22 +2,84 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Posts on Skiyer&#39;s blog</title>
-    <link>http://localhost:1313/post/</link>
+    <link>https://skiyer.github.io/post/</link>
     <description>Recent content in Posts on Skiyer&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Fri, 03 Apr 2015 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 02 Jul 2018 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="http://localhost:1313/post/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://skiyer.github.io/post/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
+      <title>算法学习笔记：动态规划</title>
+      <link>https://skiyer.github.io/post/algorithm-dynamic-greedy/</link>
+      <pubDate>Mon, 02 Jul 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://skiyer.github.io/post/algorithm-dynamic-greedy/</guid>
+      <description>&lt;p&gt;动态规划（dynamic programing）是用来解决最优化问题的一类算法。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>算法学习笔记：二叉树</title>
+      <link>https://skiyer.github.io/post/algorithm-binarytree/</link>
+      <pubDate>Tue, 05 Jun 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://skiyer.github.io/post/algorithm-binarytree/</guid>
+      <description>&lt;p&gt;二叉树（binary tree）是一种树形数据结构，树中的每个节点最多只有两个子节点。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>在Manjaro下安装TeX Live</title>
+      <link>https://skiyer.github.io/post/manjaro-texlive/</link>
+      <pubDate>Tue, 17 Apr 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://skiyer.github.io/post/manjaro-texlive/</guid>
+      <description>&lt;p&gt;之前按照Arch Wiki的步骤安装了Tex Live，结果发现安装之后不能使用&lt;code&gt;tlmgr&lt;/code&gt;安装LaTeX包。根据论坛上的&lt;a href=&#34;https://forum.manjaro.org/t/texlive-missing-tlmgr/6065&#34;&gt;讨论&lt;/a&gt;，要想使用&lt;code&gt;tlmgr&lt;/code&gt;来管理包，只能用官方的安装方法。为了更好的兼容性，我决定卸载Arch源里的包，然后下载官方安装镜像来安装。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
       <title>OTR协议学习</title>
-      <link>http://localhost:1313/post/otr-protocol/</link>
+      <link>https://skiyer.github.io/post/otr-protocol/</link>
       <pubDate>Fri, 03 Apr 2015 00:00:00 +0000</pubDate>
       
-      <guid>http://localhost:1313/post/otr-protocol/</guid>
+      <guid>https://skiyer.github.io/post/otr-protocol/</guid>
       <description>&lt;p&gt;最近信息安全实验课有一个编程项目，我们组的选题是加密即时通讯软件。上网搜了一番资料后发现一个OTR加密协议（&lt;a href=&#34;https://otr.cypherpunks.ca&#34;&gt;Off-the-Record&lt;/a&gt;）。又搜到几篇关于OTR的论文，从中学到了许多加密协议方面的知识。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Bash漏洞简析</title>
+      <link>https://skiyer.github.io/post/bash-cve-2014-6271/</link>
+      <pubDate>Sat, 04 Oct 2014 00:00:00 +0000</pubDate>
+      
+      <guid>https://skiyer.github.io/post/bash-cve-2014-6271/</guid>
+      <description>&lt;p&gt;来分析学习一下之前很火的bash漏洞。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>反向连接cmdshell</title>
+      <link>https://skiyer.github.io/post/reverse-cmd-shell/</link>
+      <pubDate>Thu, 10 Apr 2014 00:00:00 +0000</pubDate>
+      
+      <guid>https://skiyer.github.io/post/reverse-cmd-shell/</guid>
+      <description>&lt;blockquote&gt;
+&lt;p&gt;原载于bbs.xdsec.org&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;寒假时写过一个简单的cmdshell程序，直接拿来改了一下&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>内存补丁技术简析</title>
+      <link>https://skiyer.github.io/post/memory-patcher/</link>
+      <pubDate>Sun, 17 Nov 2013 00:00:00 +0000</pubDate>
+      
+      <guid>https://skiyer.github.io/post/memory-patcher/</guid>
+      <description>&lt;blockquote&gt;
+&lt;p&gt;原载于bbs.xdsec.org&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;最近逆向区各种Crack，我今天就来简单介绍一下内存补丁技术。今天拿来开刀的软件是之前演示过的一个简单CrackMe。不过为了提高patch难度加了一个UPX壳。&lt;/p&gt;</description>
     </item>
     
   </channel>

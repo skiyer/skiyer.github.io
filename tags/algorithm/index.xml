@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>algorithm on Skiyer&#39;s blog</title>
+    <link>https://skiyer.github.io/tags/algorithm/</link>
+    <description>Recent content in algorithm on Skiyer&#39;s blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Mon, 02 Jul 2018 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://skiyer.github.io/tags/algorithm/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>算法学习笔记：动态规划</title>
+      <link>https://skiyer.github.io/post/algorithm-dynamic-greedy/</link>
+      <pubDate>Mon, 02 Jul 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://skiyer.github.io/post/algorithm-dynamic-greedy/</guid>
+      <description>&lt;p&gt;动态规划（dynamic programing）是用来解决最优化问题的一类算法。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>算法学习笔记：二叉树</title>
+      <link>https://skiyer.github.io/post/algorithm-binarytree/</link>
+      <pubDate>Tue, 05 Jun 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://skiyer.github.io/post/algorithm-binarytree/</guid>
+      <description>&lt;p&gt;二叉树（binary tree）是一种树形数据结构，树中的每个节点最多只有两个子节点。&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

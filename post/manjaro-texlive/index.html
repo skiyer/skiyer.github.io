@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>在Manjaro下安装TeX Live - Skiyer&#39;s blog</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="skiyer" /><meta name="description" content="之前按照Arch Wiki的步骤安装了Tex Live，结果发现安装之后不能使用tlmgr安装LaTeX包。根据论坛上的讨论，要想使用tlmgr来管理包，只能用官方的安装方法。为了更好的兼容性，我决定卸载Arch源里的包，然后下载官方安装镜像来安装。
+" /><meta name="keywords" content="skiyer, hacking, security" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.54.0 with even 4.0.0" />
+
+
+<link rel="canonical" href="https://skiyer.github.io/post/manjaro-texlive/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<link href="/dist/even.c2a46f00.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="在Manjaro下安装TeX Live" />
+<meta property="og:description" content="之前按照Arch Wiki的步骤安装了Tex Live，结果发现安装之后不能使用tlmgr安装LaTeX包。根据论坛上的讨论，要想使用tlmgr来管理包，只能用官方的安装方法。为了更好的兼容性，我决定卸载Arch源里的包，然后下载官方安装镜像来安装。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://skiyer.github.io/post/manjaro-texlive/" />
+<meta property="article:published_time" content="2018-04-17T00:00:00&#43;00:00"/>
+<meta property="article:modified_time" content="2018-04-17T00:00:00&#43;00:00"/>
+
+<meta itemprop="name" content="在Manjaro下安装TeX Live">
+<meta itemprop="description" content="之前按照Arch Wiki的步骤安装了Tex Live，结果发现安装之后不能使用tlmgr安装LaTeX包。根据论坛上的讨论，要想使用tlmgr来管理包，只能用官方的安装方法。为了更好的兼容性，我决定卸载Arch源里的包，然后下载官方安装镜像来安装。">
+
+
+<meta itemprop="datePublished" content="2018-04-17T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2018-04-17T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="872">
+
+
+
+<meta itemprop="keywords" content="linux,latex," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="在Manjaro下安装TeX Live"/>
+<meta name="twitter:description" content="之前按照Arch Wiki的步骤安装了Tex Live，结果发现安装之后不能使用tlmgr安装LaTeX包。根据论坛上的讨论，要想使用tlmgr来管理包，只能用官方的安装方法。为了更好的兼容性，我决定卸载Arch源里的包，然后下载官方安装镜像来安装。"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Skiyer&#39;s blog</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Skiyer&#39;s blog</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">在Manjaro下安装TeX Live</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2018-04-17 </span>
+        
+        <span id="busuanzi_container_page_pv" class="more-meta"> <span id="busuanzi_value_page_pv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> 次阅读 </span>
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#卸载arch源的texlive包">卸载Arch源的texlive包</a></li>
+<li><a href="#下载安装镜像">下载安装镜像</a></li>
+<li><a href="#加载镜像">加载镜像</a></li>
+<li><a href="#启动安装程序">启动安装程序</a></li>
+<li><a href="#配置path">配置PATH</a></li>
+<li><a href="#手动更新">手动更新</a></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <p>之前按照Arch Wiki的步骤安装了Tex Live，结果发现安装之后不能使用<code>tlmgr</code>安装LaTeX包。根据论坛上的<a href="https://forum.manjaro.org/t/texlive-missing-tlmgr/6065">讨论</a>，要想使用<code>tlmgr</code>来管理包，只能用官方的安装方法。为了更好的兼容性，我决定卸载Arch源里的包，然后下载官方安装镜像来安装。</p>
+
+<h2 id="卸载arch源的texlive包">卸载Arch源的texlive包</h2>
+
+<p>首先卸载之前用<code>pacman</code>安装的texlive相关包，根据各人安装的包不同，所需要卸载的包也不同。这里我需要卸载<code>textlive-localmanger-git</code>，<code>texlive-bin</code>，<code>texlive-most</code>和<code>texlive-lang</code>包。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">sudo pacman -R texlive-localmanger-git texlive-bin texlive-most texlive-lang</code></pre></td></tr></table>
+</div>
+</div>
+<h2 id="下载安装镜像">下载安装镜像</h2>
+
+<p>在清华镜像站上下载安装镜像和md5校验文件，我下载的版本是<a href="https://mirrors.tuna.tsinghua.edu.cn/CTAN/systems/texlive/Images/texlive2017-20170524.iso">texlive2017-20170524</a>。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="nb">cd</span> ~
+curl -O https://mirrors.tuna.tsinghua.edu.cn/CTAN/systems/texlive/Images/texlive2017-20170524.iso
+curl -O https://mirrors.tuna.tsinghua.edu.cn/CTAN/systems/texlive/Images/texlive2017-20170524.iso.md5
+md5sum -c texlive2017-20170524.iso.md5</code></pre></td></tr></table>
+</div>
+</div>
+<p>若校验失败则需要重新下载。</p>
+
+<h2 id="加载镜像">加载镜像</h2>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">sudo mount -o loop texlive2017-20170524.iso /mnt </code></pre></td></tr></table>
+</div>
+</div>
+<p>如果显示mount failed，可能是因为系统安装了新的Linux内核之后没有重启。重启机器后再运行上面的命令即可成功加载。</p>
+
+<h2 id="启动安装程序">启动安装程序</h2>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="nb">cd</span> /mnt
+sudo ./install-tl</code></pre></td></tr></table>
+</div>
+</div>
+<p>运行上面命令，进入命令行安装界面。我这里采用默认安装方案，安装后的文件大约需要占用5G空间。因为后面会手动更新，所以options中的最后一项要去掉勾选，其余选项保持默认。输入之后发现<code>after install, use tlnet on CTAN for package updates</code>前面变为空，说明设置成功。</p>
+
+<p>最后输入&rdquo;i,回车&rdquo;开始安装，等待安装结束。屏幕输出&rdquo;Welcome to TeX Live!&ldquo;表示安装成功。 安装完成后需要卸载镜像。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="nb">cd</span>
+sudo umount /mnt</code></pre></td></tr></table>
+</div>
+</div>
+<h2 id="配置path">配置PATH</h2>
+
+<p>此时运行<code>tex</code>会提示command not found，这是因为Tex Live的路径还没有加入<code>PATH</code>中，运行下面的命令即可。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="nb">export</span> <span class="nv">PATH</span><span class="o">=</span>/usr/local/texlive/2017/bin/x86_64-linux:<span class="nv">$PATH</span>    
+<span class="nb">export</span> <span class="nv">INFOPATH</span><span class="o">=</span><span class="nv">$INFOPATH</span>:/usr/local/texlive/2017/texmf-dist/doc/info
+<span class="nb">export</span> <span class="nv">MANPATH</span><span class="o">=</span><span class="nv">$MANPATH</span>:/usr/local/texlive/2017/texmf-dist/doc/man</code></pre></td></tr></table>
+</div>
+</div>
+<p>为了方便以后使用，需要把上面的内容加入到配置文件中。不同的shell使用不同的配置文件，如果使用的是<code>bash</code>，配置文件为~/.bashrc，如果是<code>zsh</code>，那么配置文件为~/zshenv。</p>
+
+<h2 id="手动更新">手动更新</h2>
+
+<p>配置清华开源镜像站地址作为更新源，然后进行更新。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">sudo tlmgr option repository https://mirrors.tuna.tsinghua.edu.cn/CTAN/systems/texlive/tlnet
+sudo tlmgr update --self --all</code></pre></td></tr></table>
+</div>
+</div>
+<p>等待下载安装完成后即可使用。</p>
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">skiyer</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2018-04-17
+        
+    </span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content"><a rel="license noopener" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC BY-NC-ND 4.0</a></span>
+  </p>
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/linux/">linux</a>
+          <a href="/tags/latex/">latex</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/algorithm-binarytree/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">算法学习笔记：二叉树</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        <a class="next" href="/post/otr-protocol/">
+            <span class="next-text nav-default">OTR协议学习</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        <div id="disqus_thread"></div>
+    <script type="text/javascript">
+    (function() {
+      
+      
+      if (window.location.hostname === 'localhost') return;
+
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      var disqus_shortname = 'skiyer';
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="https://github.com/skiyer/" class="iconfont icon-github" title="github"></a>
+  <a href="https://skiyer.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  <div class="busuanzi-footer">
+    <span id="busuanzi_container_site_pv"> 本站总访问量 <span id="busuanzi_value_site_pv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> 次 </span>
+      <span class="division">|</span>
+    <span id="busuanzi_container_site_uv"> 本站总访客数 <span id="busuanzi_value_site_uv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> 人 </span>
+  </div>
+
+  <span class="copyright-year">
+    &copy; 
+    2015 - 
+    2019
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">skiyer</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
+
+
+
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/pangu@4.0.7/dist/browser/pangu.min.js"></script>
+<script>
+  pangu.spacingElementById('main');
+  pangu.spacingElementByClassName('comment');
+  pangu.spacingElementByTagName('p');
+
+  document.addEventListener('DOMContentLoaded', () => {
+    
+    pangu.autoSpacingPage();
+  });
+</script>
+
+
+
+
+</body>
+</html>

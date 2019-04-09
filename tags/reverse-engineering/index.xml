@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>reverse engineering on Skiyer&#39;s blog</title>
+    <link>https://skiyer.github.io/tags/reverse-engineering/</link>
+    <description>Recent content in reverse engineering on Skiyer&#39;s blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Sun, 17 Nov 2013 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://skiyer.github.io/tags/reverse-engineering/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>内存补丁技术简析</title>
+      <link>https://skiyer.github.io/post/memory-patcher/</link>
+      <pubDate>Sun, 17 Nov 2013 00:00:00 +0000</pubDate>
+      
+      <guid>https://skiyer.github.io/post/memory-patcher/</guid>
+      <description>&lt;blockquote&gt;
+&lt;p&gt;原载于bbs.xdsec.org&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;最近逆向区各种Crack，我今天就来简单介绍一下内存补丁技术。今天拿来开刀的软件是之前演示过的一个简单CrackMe。不过为了提高patch难度加了一个UPX壳。&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

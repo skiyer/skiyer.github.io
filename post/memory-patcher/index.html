@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>内存补丁技术简析 - Skiyer&#39;s blog</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="skiyer" /><meta name="description" content=" 原载于bbs.xdsec.org
+ 最近逆向区各种Crack，我今天就来简单介绍一下内存补丁技术。今天拿来开刀的软件是之前演示过的一个简单CrackMe。不过为了提高patch难度加了一个UPX壳。
+" /><meta name="keywords" content="skiyer, hacking, security" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.54.0 with even 4.0.0" />
+
+
+<link rel="canonical" href="https://skiyer.github.io/post/memory-patcher/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<link href="/dist/even.c2a46f00.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="内存补丁技术简析" />
+<meta property="og:description" content="
+原载于bbs.xdsec.org
+
+
+最近逆向区各种Crack，我今天就来简单介绍一下内存补丁技术。今天拿来开刀的软件是之前演示过的一个简单CrackMe。不过为了提高patch难度加了一个UPX壳。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://skiyer.github.io/post/memory-patcher/" />
+<meta property="article:published_time" content="2013-11-17T00:00:00&#43;00:00"/>
+<meta property="article:modified_time" content="2013-11-17T00:00:00&#43;00:00"/>
+
+<meta itemprop="name" content="内存补丁技术简析">
+<meta itemprop="description" content="
+原载于bbs.xdsec.org
+
+
+最近逆向区各种Crack，我今天就来简单介绍一下内存补丁技术。今天拿来开刀的软件是之前演示过的一个简单CrackMe。不过为了提高patch难度加了一个UPX壳。">
+
+
+<meta itemprop="datePublished" content="2013-11-17T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2013-11-17T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="1668">
+
+
+
+<meta itemprop="keywords" content="reverse engineering," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="内存补丁技术简析"/>
+<meta name="twitter:description" content="
+原载于bbs.xdsec.org
+
+
+最近逆向区各种Crack，我今天就来简单介绍一下内存补丁技术。今天拿来开刀的软件是之前演示过的一个简单CrackMe。不过为了提高patch难度加了一个UPX壳。"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Skiyer&#39;s blog</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Skiyer&#39;s blog</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">内存补丁技术简析</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2013-11-17 </span>
+        
+        <span id="busuanzi_container_page_pv" class="more-meta"> <span id="busuanzi_value_page_pv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> 次阅读 </span>
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content always-active">
+    
+  </div>
+</div>
+    <div class="post-content">
+      <blockquote>
+<p>原载于bbs.xdsec.org</p>
+</blockquote>
+
+<p>最近逆向区各种Crack，我今天就来简单介绍一下内存补丁技术。今天拿来开刀的软件是之前演示过的一个简单CrackMe。不过为了提高patch难度加了一个UPX壳。</p>
+
+<p>###0x01</p>
+
+<p>我们先用OD带壳分析一下这个程序。OD载入后，利用ESP定律，来到 JMP 00448F3D</p>
+
+<div class='align-center'>
+  <p><img src="/images/memory-patcher-1.png" alt="memory-patcher-1.png" /></p>
+
+</div>
+
+<p>这一句是壳的结尾，0048F3D也就是程序的OEP了。这时利用查找字符串的方法，来到关键跳转这里。</p>
+
+<div class='align-center'>
+  <p><img src="/images/memory-patcher-2.png" alt="memory-patcher-2.png" /></p>
+
+</div>
+
+<p>只要NOP覆盖关键跳就能实现爆破，我们NOP后直接F9运行试试看。</p>
+
+<div class='align-center'>
+  <p><img src="/images/memory-patcher-3.png" alt="memory-patcher-3.png" /></p>
+
+</div>
+
+<p>显示成功界面！别高兴得太早，现在我们来试试保存文件。OD马上弹出了一个框。</p>
+
+<div class='align-center'>
+  <p><img src="/images/memory-patcher-4.png" alt="memory-patcher-4.png" /></p>
+
+</div>
+
+<p>这是怎么回事呢？别忘了我们调试的这个程序是带壳的，程序代码被壳加密过，所以不能直接覆盖。那么如何在不脱掉壳的情况下进行破解呢？</p>
+
+<p>###0x02</p>
+
+<p>我们先来理解一下“壳”的概念。简单来看，壳是附加在原始程序上的一个程序，它对原始程序的代码进行加密，使得我们无法直接修改原始程序，也不能通过静态反编译得到程序代码。但是，加密过的原始程序代码不能直接执行，所以在原始程序执行之前，壳必须对原始程序代码进行解密、还原，然后才能执行原始程序。</p>
+
+<p>也就是说，在壳解密完成之前，我们找不到原始程序代码，更不可能进行修改；然而在壳运行完之后，我们就能看到原始程序的代码，也就能修改程序进行爆破了！</p>
+
+<p>现在回忆一下我们刚才用OD爆破的步骤：</p>
+
+<ol>
+<li>运行到壳的结尾</li>
+<li>修改关键代码（NOP覆盖关键跳）</li>
+<li>运行程序（爆破成功）</li>
+</ol>
+
+<p>接下来我们来写一个程序实现上面的步骤，也就是今天的主角——内存补丁（Loader）。</p>
+
+<p>内存补丁的思想就是当程序运行到某个时刻时，对程序代码进行修改，然后实现我们想要的操作。今天我们利用Debug API来写内存补丁。利用Debug API，我们就能像OD一样调试程序进行爆破。
+Debug API具体实现的步骤是这样的：</p>
+
+<ol>
+<li>载入程序 （使用CreateProcess）</li>
+<li>在壳的结尾下断点 （保存此处原始指令，修改成INT3）</li>
+<li>修改关键代码 （使用WriteProcessMemory）</li>
+<li>删除断点（恢复原始指令）</li>
+<li>运行程序</li>
+</ol>
+
+<p>显然，我们应该把 004A0824 处 JMP 00448F3D 修改成INT3(0xcc)，然后用NOP(0x90)覆盖 0040119E 处的关键跳。注意关键跳的地方有6个字节，覆盖的时候要用6个 0x90。
+下面是代码：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-c" data-lang="c"><span class="lnt">  1
+</span><span class="lnt">  2
+</span><span class="lnt">  3
+</span><span class="lnt">  4
+</span><span class="lnt">  5
+</span><span class="lnt">  6
+</span><span class="lnt">  7
+</span><span class="lnt">  8
+</span><span class="lnt">  9
+</span><span class="lnt"> 10
+</span><span class="lnt"> 11
+</span><span class="lnt"> 12
+</span><span class="lnt"> 13
+</span><span class="lnt"> 14
+</span><span class="lnt"> 15
+</span><span class="lnt"> 16
+</span><span class="lnt"> 17
+</span><span class="lnt"> 18
+</span><span class="lnt"> 19
+</span><span class="lnt"> 20
+</span><span class="lnt"> 21
+</span><span class="lnt"> 22
+</span><span class="lnt"> 23
+</span><span class="lnt"> 24
+</span><span class="lnt"> 25
+</span><span class="lnt"> 26
+</span><span class="lnt"> 27
+</span><span class="lnt"> 28
+</span><span class="lnt"> 29
+</span><span class="lnt"> 30
+</span><span class="lnt"> 31
+</span><span class="lnt"> 32
+</span><span class="lnt"> 33
+</span><span class="lnt"> 34
+</span><span class="lnt"> 35
+</span><span class="lnt"> 36
+</span><span class="lnt"> 37
+</span><span class="lnt"> 38
+</span><span class="lnt"> 39
+</span><span class="lnt"> 40
+</span><span class="lnt"> 41
+</span><span class="lnt"> 42
+</span><span class="lnt"> 43
+</span><span class="lnt"> 44
+</span><span class="lnt"> 45
+</span><span class="lnt"> 46
+</span><span class="lnt"> 47
+</span><span class="lnt"> 48
+</span><span class="lnt"> 49
+</span><span class="lnt"> 50
+</span><span class="lnt"> 51
+</span><span class="lnt"> 52
+</span><span class="lnt"> 53
+</span><span class="lnt"> 54
+</span><span class="lnt"> 55
+</span><span class="lnt"> 56
+</span><span class="lnt"> 57
+</span><span class="lnt"> 58
+</span><span class="lnt"> 59
+</span><span class="lnt"> 60
+</span><span class="lnt"> 61
+</span><span class="lnt"> 62
+</span><span class="lnt"> 63
+</span><span class="lnt"> 64
+</span><span class="lnt"> 65
+</span><span class="lnt"> 66
+</span><span class="lnt"> 67
+</span><span class="lnt"> 68
+</span><span class="lnt"> 69
+</span><span class="lnt"> 70
+</span><span class="lnt"> 71
+</span><span class="lnt"> 72
+</span><span class="lnt"> 73
+</span><span class="lnt"> 74
+</span><span class="lnt"> 75
+</span><span class="lnt"> 76
+</span><span class="lnt"> 77
+</span><span class="lnt"> 78
+</span><span class="lnt"> 79
+</span><span class="lnt"> 80
+</span><span class="lnt"> 81
+</span><span class="lnt"> 82
+</span><span class="lnt"> 83
+</span><span class="lnt"> 84
+</span><span class="lnt"> 85
+</span><span class="lnt"> 86
+</span><span class="lnt"> 87
+</span><span class="lnt"> 88
+</span><span class="lnt"> 89
+</span><span class="lnt"> 90
+</span><span class="lnt"> 91
+</span><span class="lnt"> 92
+</span><span class="lnt"> 93
+</span><span class="lnt"> 94
+</span><span class="lnt"> 95
+</span><span class="lnt"> 96
+</span><span class="lnt"> 97
+</span><span class="lnt"> 98
+</span><span class="lnt"> 99
+</span><span class="lnt">100
+</span><span class="lnt">101
+</span><span class="lnt">102
+</span><span class="lnt">103
+</span><span class="lnt">104
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-c" data-lang="c"><span class="cm">/********************************************//**
+</span><span class="cm"> * 内存补丁技术学习笔记--Debug API 机制
+</span><span class="cm"> *
+</span><span class="cm"> * MinGW gcc 4.7.1 编译通过
+</span><span class="cm"> * 2013.11.17
+</span><span class="cm"> *  by skiyer
+</span><span class="cm"> ***********************************************/</span>
+   
+   
+<span class="cp">#include</span> <span class="cpf">&lt;windows.h&gt;</span><span class="cp">
+</span><span class="cp"></span>   
+<span class="cp">#define BREAK_POINT      0x004A0824            </span><span class="c1">//需要下断点处的地址
+</span><span class="c1"></span><span class="cp">#define PATCH_POINT      0x0040119E            </span><span class="c1">//需要打补丁处地址
+</span><span class="c1"></span><span class="cp">#define SZFILENAME       &#34;.\\第一集.exe&#34;       </span><span class="c1">//目标程序文件名
+</span><span class="c1"></span>   
+   
+<span class="kt">int</span> <span class="n">WINAPI</span> <span class="nf">WinMain</span> <span class="p">(</span><span class="n">HINSTANCE</span> <span class="n">hInstance</span><span class="p">,</span> <span class="n">HINSTANCE</span> <span class="n">hPrevInstance</span><span class="p">,</span>
+                    <span class="n">PSTR</span> <span class="n">szCmdLine</span><span class="p">,</span> <span class="kt">int</span> <span class="n">iCmdShow</span><span class="p">)</span>
+<span class="p">{</span>
+   
+    <span class="n">STARTUPINFO</span>             <span class="n">si</span> <span class="p">;</span>
+    <span class="n">PROCESS_INFORMATION</span>     <span class="n">pi</span> <span class="p">;</span>
+    <span class="n">ZeroMemory</span><span class="p">(</span><span class="o">&amp;</span><span class="n">si</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">STARTUPINFO</span><span class="p">))</span> <span class="p">;</span>
+    <span class="n">ZeroMemory</span><span class="p">(</span><span class="o">&amp;</span><span class="n">pi</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">PROCESS_INFORMATION</span><span class="p">))</span> <span class="p">;</span>
+    <span class="n">si</span><span class="p">.</span><span class="n">cb</span> <span class="o">=</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">STARTUPINFO</span><span class="p">)</span> <span class="p">;</span>
+   
+    <span class="n">BOOL</span>    <span class="n">WhileDoFlag</span> <span class="o">=</span> <span class="n">TRUE</span><span class="p">;</span>
+   
+    <span class="n">BYTE</span>    <span class="n">dwINT3code</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mh">0xCC</span><span class="p">};</span>         <span class="c1">//INT3指令
+</span><span class="c1"></span>    <span class="n">BYTE</span>    <span class="n">dwOldbyte</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">};</span>             <span class="c1">//用于保存BREAK_POINT处原指令
+</span><span class="c1"></span>    <span class="n">BYTE</span>    <span class="n">dwPatchcode</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span><span class="mh">0x90</span><span class="p">,</span> <span class="mh">0x90</span><span class="p">,</span> <span class="mh">0x90</span><span class="p">,</span> <span class="mh">0x90</span><span class="p">,</span> <span class="mh">0x90</span><span class="p">,</span> <span class="mh">0x90</span><span class="p">};</span> <span class="c1">//补丁指令
+</span><span class="c1"></span>    <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">nPatchSize</span> <span class="o">=</span> <span class="mi">6</span><span class="p">;</span>            <span class="c1">//补丁字节数
+</span><span class="c1"></span>   
+    <span class="c1">//调试载入目标程序
+</span><span class="c1"></span>    <span class="k">if</span><span class="p">(</span> <span class="o">!</span><span class="n">CreateProcess</span><span class="p">(</span><span class="n">SZFILENAME</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="n">FALSE</span><span class="p">,</span>
+                       <span class="n">DEBUG_PROCESS</span> <span class="o">|</span> <span class="n">DEBUG_ONLY_THIS_PROCESS</span><span class="p">,</span>
+                       <span class="nb">NULL</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">si</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">pi</span> <span class="p">)</span> <span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">MessageBox</span><span class="p">(</span><span class="nb">NULL</span><span class="p">,</span> <span class="s">&#34;程序载入失败！&#34;</span><span class="p">,</span> <span class="s">&#34;ERROR&#34;</span><span class="p">,</span> <span class="n">MB_OK</span><span class="p">);</span>
+        <span class="k">return</span> <span class="n">FALSE</span><span class="p">;</span>
+    <span class="p">}</span>
+   
+    <span class="n">DEBUG_EVENT</span>     <span class="n">DBEvent</span> <span class="p">;</span>
+    <span class="n">CONTEXT</span>         <span class="n">Regs</span> <span class="p">;</span>
+    <span class="n">DWORD</span>           <span class="n">dwState</span><span class="p">,</span> <span class="n">Oldpp</span><span class="p">;</span>
+   
+   
+    <span class="n">Regs</span><span class="p">.</span><span class="n">ContextFlags</span> <span class="o">=</span> <span class="n">CONTEXT_FULL</span> <span class="o">|</span> <span class="n">CONTEXT_DEBUG_REGISTERS</span> <span class="p">;</span>
+   
+    <span class="k">while</span> <span class="p">(</span><span class="n">WhileDoFlag</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="c1">//等待调试事件发生
+</span><span class="c1"></span>        <span class="n">WaitForDebugEvent</span> <span class="p">(</span><span class="o">&amp;</span><span class="n">DBEvent</span><span class="p">,</span> <span class="n">INFINITE</span><span class="p">);</span>
+        <span class="n">dwState</span> <span class="o">=</span> <span class="n">DBG_EXCEPTION_NOT_HANDLED</span> <span class="p">;</span>
+        <span class="k">switch</span> <span class="p">(</span><span class="n">DBEvent</span><span class="p">.</span><span class="n">dwDebugEventCode</span><span class="p">)</span>
+        <span class="p">{</span>
+        <span class="k">case</span> <span class="nl">CREATE_PROCESS_DEBUG_EVENT</span><span class="p">:</span>
+            <span class="c1">//如果进程开始
+</span><span class="c1"></span>            <span class="c1">//备份BREAK_POINT处原指令
+</span><span class="c1"></span>            <span class="n">ReadProcessMemory</span><span class="p">(</span><span class="n">pi</span><span class="p">.</span><span class="n">hProcess</span><span class="p">,</span> <span class="p">(</span><span class="n">LPCVOID</span><span class="p">)(</span><span class="n">BREAK_POINT</span><span class="p">),</span> <span class="o">&amp;</span><span class="n">dwOldbyte</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">dwOldbyte</span><span class="p">),</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">;</span>
+            <span class="c1">//修改内存属性，使之可写
+</span><span class="c1"></span>            <span class="n">VirtualProtectEx</span><span class="p">(</span><span class="n">pi</span><span class="p">.</span><span class="n">hProcess</span><span class="p">,</span> <span class="p">(</span><span class="n">LPVOID</span><span class="p">)</span><span class="n">BREAK_POINT</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">PAGE_EXECUTE_READWRITE</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">Oldpp</span><span class="p">);</span>
+            <span class="c1">//写入INT3指令
+</span><span class="c1"></span>            <span class="n">WriteProcessMemory</span><span class="p">(</span><span class="n">pi</span><span class="p">.</span><span class="n">hProcess</span><span class="p">,</span> <span class="p">(</span><span class="n">LPVOID</span><span class="p">)</span><span class="n">BREAK_POINT</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">dwINT3code</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+            <span class="n">dwState</span> <span class="o">=</span> <span class="n">DBG_CONTINUE</span> <span class="p">;</span>
+            <span class="k">break</span><span class="p">;</span>
+   
+        <span class="k">case</span>    <span class="nl">EXCEPTION_DEBUG_EVENT</span><span class="p">:</span>
+            <span class="k">switch</span> <span class="p">(</span><span class="n">DBEvent</span><span class="p">.</span><span class="n">u</span><span class="p">.</span><span class="n">Exception</span><span class="p">.</span><span class="n">ExceptionRecord</span><span class="p">.</span><span class="n">ExceptionCode</span><span class="p">)</span>
+            <span class="p">{</span>
+            <span class="k">case</span>    <span class="nl">EXCEPTION_BREAKPOINT</span><span class="p">:</span>
+                <span class="c1">//如果触发断点异常
+</span><span class="c1"></span>            <span class="p">{</span>
+                <span class="n">GetThreadContext</span><span class="p">(</span><span class="n">pi</span><span class="p">.</span><span class="n">hThread</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">Regs</span><span class="p">)</span> <span class="p">;</span>
+                <span class="k">if</span><span class="p">(</span><span class="n">Regs</span><span class="p">.</span><span class="n">Eip</span> <span class="o">==</span> <span class="n">BREAK_POINT</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+                    <span class="c1">//如果在BREAK_POINT处中断
+</span><span class="c1"></span>                <span class="p">{</span>
+                    <span class="c1">//在PATCH_POINT处写入补丁
+</span><span class="c1"></span>                    <span class="n">WriteProcessMemory</span><span class="p">(</span><span class="n">pi</span><span class="p">.</span><span class="n">hProcess</span><span class="p">,</span> <span class="p">(</span><span class="n">LPVOID</span><span class="p">)</span><span class="n">PATCH_POINT</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">dwPatchcode</span><span class="p">,</span> <span class="n">nPatchSize</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+                    <span class="c1">//恢复BREAK_POINT处原指令
+</span><span class="c1"></span>                    <span class="n">WriteProcessMemory</span><span class="p">(</span><span class="n">pi</span><span class="p">.</span><span class="n">hProcess</span><span class="p">,</span> <span class="p">(</span><span class="n">LPVOID</span><span class="p">)</span><span class="n">BREAK_POINT</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">dwOldbyte</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+                    <span class="c1">//重新执行原指令
+</span><span class="c1"></span>                    <span class="n">Regs</span><span class="p">.</span><span class="n">Eip</span><span class="o">--</span><span class="p">;</span>
+                    <span class="n">SetThreadContext</span><span class="p">(</span><span class="n">pi</span><span class="p">.</span><span class="n">hThread</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">Regs</span><span class="p">)</span> <span class="p">;</span>
+                <span class="p">}</span>
+                <span class="n">dwState</span> <span class="o">=</span> <span class="n">DBG_CONTINUE</span> <span class="p">;</span>
+                <span class="k">break</span><span class="p">;</span>
+            <span class="p">}</span>
+            <span class="p">}</span>
+            <span class="k">break</span><span class="p">;</span>
+   
+        <span class="k">case</span>    <span class="nl">EXIT_PROCESS_DEBUG_EVENT</span> <span class="p">:</span>
+            <span class="c1">//进程退出
+</span><span class="c1"></span>            <span class="n">WhileDoFlag</span> <span class="o">=</span> <span class="n">FALSE</span><span class="p">;</span>
+            <span class="k">break</span> <span class="p">;</span>
+        <span class="p">}</span>
+   
+        <span class="n">ContinueDebugEvent</span><span class="p">(</span><span class="n">pi</span><span class="p">.</span><span class="n">dwProcessId</span><span class="p">,</span> <span class="n">pi</span><span class="p">.</span><span class="n">dwThreadId</span><span class="p">,</span> <span class="n">dwState</span><span class="p">)</span> <span class="p">;</span>
+    <span class="p">}</span>
+   
+    <span class="n">CloseHandle</span><span class="p">(</span><span class="n">pi</span><span class="p">.</span><span class="n">hProcess</span><span class="p">)</span> <span class="p">;</span>
+    <span class="n">CloseHandle</span><span class="p">(</span><span class="n">pi</span><span class="p">.</span><span class="n">hThread</span><span class="p">)</span>  <span class="p">;</span>
+    <span class="k">return</span> <span class="n">TRUE</span><span class="p">;</span>
+<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>把loader与程序放在同一文件夹下，运行loader</p>
+
+<div class='align-center'>
+  <p><img src="/images/memory-patcher-5.png" alt="memory-patcher-5.png" /></p>
+
+</div>
+
+<p>事实上这只是Debug API 内存补丁技术的一种简单应用。除了爆破，我们可以利用 Debug API 实现更强大的功能。比如，在内存中出现注册码时下断点，再利用MessageBox弹框显示注册码，就实现了注册机功能…另外内存补丁还有其他的实现方法，有兴趣的可以看看《加密与解密》补丁技术一章。</p>
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">skiyer</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2013-11-17
+        
+    </span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content"><a rel="license noopener" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC BY-NC-ND 4.0</a></span>
+  </p>
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/reverse-engineering/">reverse engineering</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/reverse-cmd-shell/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">反向连接cmdshell</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+      </nav>
+    </footer>
+  </article>
+        </div>
+        <div id="disqus_thread"></div>
+    <script type="text/javascript">
+    (function() {
+      
+      
+      if (window.location.hostname === 'localhost') return;
+
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      var disqus_shortname = 'skiyer';
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="https://github.com/skiyer/" class="iconfont icon-github" title="github"></a>
+  <a href="https://skiyer.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  <div class="busuanzi-footer">
+    <span id="busuanzi_container_site_pv"> 本站总访问量 <span id="busuanzi_value_site_pv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> 次 </span>
+      <span class="division">|</span>
+    <span id="busuanzi_container_site_uv"> 本站总访客数 <span id="busuanzi_value_site_uv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> 人 </span>
+  </div>
+
+  <span class="copyright-year">
+    &copy; 
+    2015 - 
+    2019
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">skiyer</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
+
+
+
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/pangu@4.0.7/dist/browser/pangu.min.js"></script>
+<script>
+  pangu.spacingElementById('main');
+  pangu.spacingElementByClassName('comment');
+  pangu.spacingElementByTagName('p');
+
+  document.addEventListener('DOMContentLoaded', () => {
+    
+    pangu.autoSpacingPage();
+  });
+</script>
+
+
+
+
+</body>
+</html>
